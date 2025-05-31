@@ -1,25 +1,43 @@
 import { useId } from "react";
+import s from "./Form.module.css";
 
-const Form = ({ textChange, text, wissenBTN, alertMessage }) => {
-  const randomID = useId();
-
+const Form = ({ value, textWeergave, onSubmit }) => {
+  const loginID = useId();
+  const mailID = useId();
   return (
     <div>
-      <form>
-        <label htmlFor={randomID}>{text}</label>
-        <input
-          id={randomID}
-          type="text"
-          name="input"
-          placeholder="Voer uw code in!"
-          onChange={textChange}
-          value={text}
-        />
-        <button onClick={wissenBTN} type="submit" disabled={!text.trim()}>
-          Wissen
+      <form className={s.form}>
+        <label htmlFor={loginID}>
+          Gebruikersnaam
+          <input
+            type="text"
+            id={loginID}
+            name="login"
+            value={value.login}
+            onChange={textWeergave}
+          />
+        </label>
+        <label htmlFor={mailID}>
+          GebruikersMail
+          <input
+            type="text"
+            id={mailID}
+            name="mail"
+            value={value.mail}
+            onChange={textWeergave}
+          />
+        </label>
+        <button
+          className={s.btn}
+          type="submit"
+          onClick={onSubmit}
+          disabled={!value.login || !value.mail}
+        >
+          Opsturen
         </button>
       </form>
-      <p>{alertMessage()}</p>
+      <p>{value.login}</p>
+      <p>{value.mail}</p>
     </div>
   );
 };

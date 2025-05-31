@@ -2,25 +2,24 @@ import { useState } from "react";
 import Form from "../Form/Form";
 
 const App = () => {
-  const [text, setText] = useState("");
-  const textChange = (e) => {
-    setText(e.target.value);
-  };
-  const alertMessage = () => {
-    return !text.trim() ? "voer iets in" : "";
+  const [value, setValue] = useState({ login: "", mail: "" });
+
+  const textWeergave = (e) => {
+    setValue((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const wissenBTN = (e) => {
-    e.reset();
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    alert(`Bedankt voor je inzending, ${value.login}`);
+
+    setValue({ login: "", mail: "" });
   };
+  console.log(value.login);
+
   return (
     <div>
-      <Form
-        textChange={textChange}
-        text={text}
-        wissenBTN={wissenBTN}
-        alertMessage={alertMessage}
-      />
+      <Form value={value} textWeergave={textWeergave} onSubmit={onSubmit} />
     </div>
   );
 };
