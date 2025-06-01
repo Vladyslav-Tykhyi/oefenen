@@ -1,60 +1,76 @@
-import { useEffect, useState } from "react";
-import ContactForm from "../ContacntForm/ContactForm";
-import ContactList from "../ContactList/ContactList";
-import SearchBox from "../SearchBox/SearchBox";
-import s from "./App.module.css";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { useId } from "react";
+import * as Yup from "yup";
+
+const FeedbackSchema = Yup.object().shape({
+  username: Yup.string()
+    .min(2, "Too Short!")
+    .max(50, "Too Long!")
+    .required("Required"),
+  email: Yup.string().email("Must be a valid email!").required("Required"),
+  message: Yup.string()
+    .min(3, "Too short")
+    .max(256, "Too long")
+    .required("Required"),
+  level: Yup.string().oneOf(["good", "neutral", "bad"]).required("Required"),
+});
+
+const initialValues = {
+  username: "",
+  email: "",
+  message: "",
+  level: "good",
+};
 
 const App = () => {
-  const [user, setUser] = useState({ name: "", number: "", id: "" });
-  const [contact, setContact] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem("contacts"));
-    return saved ? saved : [];
-  });
-  const [filter, setFilter] = useState("");
+  const nameFieldId = useId();
+  const emailFieldId = useId();
+  const msgFieldId = useId();
+  const levelFieldId = useId();
 
-  const sendData = (e) => {
-    e.preventDefault();
-
-    const newContact = {
-      id: crypto.randomUUID(),
-      name: user.name,
-      number: user.number,
-    };
-
-    setContact((prev) => [...prev, newContact]);
-    setUser({ name: "", number: "", id: "" });
-  };
-
-  const handleCloseBTN = (id) => {
-    setContact((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const getData = (e) => {
-    const { name, value } = e.target;
-    setUser((prev) => ({ ...prev, [name]: value, id: crypto.randomUUID() }));
-  };
-
-  useEffect(() => {
-    localStorage.setItem("contacts", JSON.stringify(contact));
-  }, [contact]);
-
-  const filterContacts = () => {
-    if (filter.trim().length < 2) return contact;
-    return contact.filter((c) =>
-      c.name.toLowerCase().includes(filter.toLowerCase())
-    );
+  const handleSubmit = (values, actions) => {
+    console.log(values);
+    actions.resetForm();
   };
 
   return (
-    <div>
-      <h1 className={s.header}>Phonebook</h1>
-      <ContactForm sendData={sendData} getData={getData} user={user} />
-      <SearchBox setFilter={setFilter} />
-      <ContactList
-        contacts={filterContacts()}
-        handleCloseBTN={handleCloseBTN}
-      />
-    </div>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={FeedbackSchema}
+    >
+      <Form>
+        <div>
+          <label htmlFor={nameFieldId}>Username</label>
+          <Field type="text" name="username" id={nameFieldId} />
+          <ErrorMessage name="username" component="span" />
+        </div>
+
+        <div>
+          <label htmlFor={emailFieldId}>Email</label>
+          <Field type="email" name="email" id={emailFieldId} />
+          <ErrorMessage name="email" component="span" />
+        </div>
+
+        <div>
+          <label htmlFor={msgFieldId}>Message</label>
+          <Field as="textarea" name="message" id={msgFieldId} rows="5" />
+          <ErrorMessage name="message" component="span" />
+        </div>
+
+        <div>
+          <label htmlFor={levelFieldId}>Service satisfaction level</label>
+          <Field as="select" name="level" id={levelFieldId}>
+            <option value="good">Good</option>
+            <option value="neutral">Neutral</option>
+            <option value="bad">Bad</option>
+          </Field>
+          <ErrorMessage name="level" component="span" />
+        </div>
+
+        <button type="submit">Submit</button>
+      </Form>
+    </Formik>
   );
 };
 
