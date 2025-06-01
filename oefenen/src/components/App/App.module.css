@@ -1,6 +1,4 @@
-.container {
-  width: 80%;
-  margin: 40px auto 0;
-  display: flex;
-  gap: 20px;
+.header {
+  margin: 60px auto 10px;
+  width: fit-content;
 }

@@ -1,8 +1,7 @@
 .form {
   width: 400px;
   border: 1px solid black;
-  margin: 100px auto 0;
-  min-height: 400px;
+  margin: 0 auto;
   padding: 12px;
 
   & input {
