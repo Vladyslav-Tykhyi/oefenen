@@ -11,7 +11,7 @@ const ContactForm = ({ sendData, getData, user }) => {
             className={s.input}
             placeholder="Name"
             name="name"
-            value={user.value}
+            value={user.name}
             onChange={getData}
             required
           />
@@ -19,11 +19,11 @@ const ContactForm = ({ sendData, getData, user }) => {
         <label>
           <span>Number</span>
           <input
-            type="tel"
+            type="number"
             className={s.input}
             placeholder="Telefoonnummer"
             name="number"
-            value={user.value}
+            value={user.number}
             onChange={getData}
             required
           />

@@ -6,40 +6,14 @@ import s from "./App.module.css";
 
 const App = () => {
   const [user, setUser] = useState({ name: "", number: "", id: "" });
-  const [contact, setContact] = useState([
-    { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
-    { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
-    { id: "id-3", name: "Eden Clements", number: "645-17-79" },
-    { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
-  ]);
-
-  useEffect(() => {
+  const [contact, setContact] = useState(() => {
     const saved = JSON.parse(localStorage.getItem("contacts"));
-    if (saved) setContact(saved);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("contacts", JSON.stringify(contact));
-  }, [contact]);
+    return saved ? saved : [];
+  });
+  const [filter, setFilter] = useState("");
 
   const sendData = (e) => {
     e.preventDefault();
-
-    if (!user.name || !user.number) {
-      alert("Vul zowel naam als nummer in.");
-      return;
-    }
-
-    const isDuplicate = contact.some(
-      (c) =>
-        c.name.trim().toLowerCase() === user.name.trim().toLowerCase() ||
-        c.number.trim() === user.number.trim()
-    );
-
-    if (isDuplicate) {
-      alert("Contact bestaat al.");
-      return;
-    }
 
     const newContact = {
       id: crypto.randomUUID(),
@@ -49,25 +23,37 @@ const App = () => {
 
     setContact((prev) => [...prev, newContact]);
     setUser({ name: "", number: "", id: "" });
-    e.target.reset();
   };
 
-  const handleCloseBTN = (e) => {
-    setContact(() => contact.filter((item) => item.id !== e.target.id));
+  const handleCloseBTN = (id) => {
+    setContact((prev) => prev.filter((item) => item.id !== id));
   };
 
   const getData = (e) => {
     const { name, value } = e.target;
+    setUser((prev) => ({ ...prev, [name]: value, id: crypto.randomUUID() }));
+  };
 
-    setUser((prev) => ({ ...prev, [name]: value }));
+  useEffect(() => {
+    localStorage.setItem("contacts", JSON.stringify(contact));
+  }, [contact]);
+
+  const filterContacts = () => {
+    if (filter.trim().length < 2) return contact;
+    return contact.filter((c) =>
+      c.name.toLowerCase().includes(filter.toLowerCase())
+    );
   };
 
   return (
     <div>
       <h1 className={s.header}>Phonebook</h1>
       <ContactForm sendData={sendData} getData={getData} user={user} />
-      <SearchBox />
-      <ContactList contacts={contact} handleCloseBTN={handleCloseBTN} />
+      <SearchBox setFilter={setFilter} />
+      <ContactList
+        contacts={filterContacts()}
+        handleCloseBTN={handleCloseBTN}
+      />
     </div>
   );
 };

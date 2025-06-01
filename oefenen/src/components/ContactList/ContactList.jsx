@@ -13,7 +13,7 @@ const ContactList = ({ contacts, handleCloseBTN }) => {
               </div>
               <button
                 className={s.list_item_delBTN}
-                onClick={handleCloseBTN}
+                onClick={() => handleCloseBTN(item.id)}
                 id={item.id}
               >
                 Delete
